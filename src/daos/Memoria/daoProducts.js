@@ -1,4 +1,4 @@
-class ProductManager {
+class DaoProducts {
     constructor(){
         this.products=[]
     }
@@ -32,7 +32,7 @@ class ProductManager {
         }
     }
 }
-const productos = new ProductManager()
+export const daoProducts = new DaoProducts()
 // PRUEBAS
 //CARGA DE PRODUCTOS CORRECTAS
 console.log(productos.addProduct('soda', 'La mas refrescante', 250, 'https://d1on8qs0xdu5jz.cloudfront.net/webapp/images/productos/b/0000004000/4236.jpg',10))
