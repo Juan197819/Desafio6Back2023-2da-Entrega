@@ -1,13 +1,37 @@
 import fs from 'fs'
 
 class DaoCarts {
-
     constructor(pathCarts){
         this.pathCarts=pathCarts
     }
+    async #getCarts(){
+        try {
+            if (fs.existsSync(this.pathCarts)) {
+                const file = await fs.promises.readFile(this.pathCarts, 'utf-8')
+                let fileParse = JSON.parse(file)
+                return fileParse
+            }else{
+                return []
+            }
+        } catch (error) {
+            throw (error)    
+        }
+    }
+    async #getCartById(id){
+        try {
+            let carts = await this.#getCarts() // return =>[{...}] || []
+            console.log('carts', carts)
+            let cart = carts.find(c=>c.id==id) // return {...} || undefined
+            console.log('cart', cart)
+            if (!cart) throw new Error('Nonexistent cart!')
+            return cart
+        } catch (error) {
+            throw (error)    
+        }
+    }
     async addCart(){
         try {
-            const arrayCart = await this.getCarts()
+            const arrayCart = await this.#getCarts()
             let newId;
             !arrayCart.length? newId= 1 : newId=  arrayCart[arrayCart.length-1].id+1
             let newCart = {id:newId, products:[]}
@@ -20,33 +44,25 @@ class DaoCarts {
             throw (error)   
         }
     }
-    async getCarts(id){
+    async getProdToCart(id){
         try {
-            if (fs.existsSync(this.pathCarts)) {
-                const file = await fs.promises.readFile(this.pathCarts, 'utf-8')
-                console.log(file)
-                let fileParse = JSON.parse(file)
-                if (id) fileParse = fileParse.filter(c=>c.id==id)
-                return fileParse
-            }else{
-                return []
-            }
+            return await this.#getCartById(id)
         } catch (error) {
             throw (error)   
         }
     }
-    async updateCart(cid, pid){
+    async addProductToCart(cid, pid){
         try {
-            let carts = await this.getCarts()
+            let carts = await this.#getCarts()
             let indexCart =carts.findIndex(c=>c.id==cid)
-            if(indexCart == -1) throw new Error ('Carrito inexistente' )
+            if(indexCart == -1) throw new Error ('Nonexistent cart!')
 
             let indexProd = carts[indexCart].products.findIndex(p=>p.id==pid)
             if (indexProd != -1) {
                 carts[indexCart].products[indexProd].quantity+=1 
             } else {
                 carts[indexCart].products.push({
-                    id: Number(pid),
+                    product: Number(pid),
                     quantity:1
                 })
             }

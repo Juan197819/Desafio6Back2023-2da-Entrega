@@ -1,4 +1,7 @@
-import daoProducts from "../daos/FileSystem/daoProducts.js";
+import 'dotenv/config'
+const PERSISTENCIA = process.env.PERSISTENCIA //FileSystem o MongoDB (BD actual MongoDB en archivo .env)
+const {default: daoProducts} = await import(`../daos/${PERSISTENCIA}/daoProducts.js`)
+console.log('Persistencia' ,PERSISTENCIA)
 
 class ServiceProducts {
     async serviceAddProduct (product){
@@ -9,9 +12,9 @@ class ServiceProducts {
             throw error
         }
     }
-    async serviceGetProducts (limit){
+    async serviceGetProducts (limit, page, sort, query){
         try {
-            const productos = await daoProducts.getProducts(limit)
+            const productos = await daoProducts.getProducts(limit, page, sort, query)
             return productos
         } catch (error) {
             throw error
